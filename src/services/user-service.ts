@@ -55,19 +55,12 @@ export class UserService {
     return tolistResponse(result);
   }
 
-  static async getOne(id: string): Promise<UserResponse> {
-    const data = await UserRepository.findById(id);
-    if (!data) {
-      throw new ResponseError(404, "Data Tidak Ditemukan");
-    }
-    return toUserResponse(data);
-  }
   static async update(
     id: string,
     request: UpdateUserRequest
   ): Promise<UserResponse> {
     const data = Validation.validate(UserValidation.UPDATE, request);
-    const user = await UserRepository.findById(id);
+    const user = await UserRepository.findByUUID(id);
     if (!user) {
       throw new ResponseError(404, "Data Tidak Ditemukan");
     }
@@ -93,7 +86,7 @@ export class UserService {
   }
 
   static async delete(id: string) {
-    const data = await UserRepository.findById(id);
+    const data = await UserRepository.findByUUID(id);
     if (!data) {
       throw new ResponseError(404, "Data Tidak Ditemukan");
     }

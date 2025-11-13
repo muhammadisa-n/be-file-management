@@ -1,5 +1,4 @@
 import { NextFunction, Response } from "express";
-import { CreateFileRequest } from "../dtos/file-dto";
 import {
   errorResponse,
   successResponse,
@@ -16,6 +15,7 @@ export class FileController {
       const file = req.files?.file;
       if (!file) {
         res.status(400).json(errorResponse("File Belum Diupload", 400));
+        return;
       }
       const fileUpload = Array.isArray(file) ? file[0] : file;
       const response = await FileService.create(
@@ -33,10 +33,22 @@ export class FileController {
     }
   }
 
+  static async detail(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const uuid = req.params.uuid;
+      const response = await FileService.detail(uuid);
+      res
+        .status(200)
+        .json(successResponse("Berhasil Get MetaData File", 200, response));
+    } catch (e) {
+      next(e);
+    }
+  }
+
   static async stream(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { uuid } = req.params;
-      const { stream, file } = await FileService.stream(uuid);
+      const { stream, file } = await FileService.stream(uuid, req.user!.id);
 
       res.setHeader("Content-Type", file.type || "application/octet-stream");
       res.setHeader("Content-Disposition", `inline; filename="${file.name}"`);
@@ -54,7 +66,7 @@ export class FileController {
   static async download(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { uuid } = req.params;
-      const { data, file } = await FileService.download(uuid);
+      const { data, file } = await FileService.download(uuid, req.user!.id);
 
       res.setHeader("Content-Type", data.contentType);
       res.setHeader(
@@ -66,12 +78,26 @@ export class FileController {
       next(error);
     }
   }
+  static async softDelete(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const { uuid } = req.params;
+      await FileService.softDelete(uuid);
+      res
+        .status(200)
+        .json(successResponse("File berhasil dihapus sementara", 200));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async delete(req: UserRequest, res: Response, next: NextFunction) {
     try {
       const { uuid } = req.params;
       await FileService.delete(req, uuid);
 
-      res.status(200).json(successResponse("File berhasil dihapus", 200));
+      res
+        .status(200)
+        .json(successResponse("File berhasil dihapus Permanen", 200));
     } catch (error) {
       next(error);
     }

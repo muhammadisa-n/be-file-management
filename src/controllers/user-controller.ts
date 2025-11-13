@@ -33,17 +33,17 @@ export class UserController {
     }
   }
 
-  static async getOne(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = req.params.id;
-      const response = await UserService.getOne(id);
-      res
-        .status(200)
-        .json(successResponse("Berhasil Get Detail Data", 200, response));
-    } catch (e) {
-      next(e);
-    }
-  }
+  // static async getOne(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const id = req.params.id;
+  //     const response = await UserService.getOne(id);
+  //     res
+  //       .status(200)
+  //       .json(successResponse("Berhasil Get Detail Data", 200, response));
+  //   } catch (e) {
+  //     next(e);
+  //   }
+  // }
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {

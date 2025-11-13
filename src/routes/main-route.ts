@@ -1,7 +1,6 @@
 import express from "express";
 import { successResponse } from "../utils/response";
 import { authRouter } from "./auth-route";
-import { userRouter } from "./user-route";
 import { fileRouter } from "./file-route";
 
 export const mainRouter = express.Router();
@@ -23,5 +22,4 @@ mainRouter.get("/api", (req, res) => {
     .end();
 });
 mainRouter.use(authRouter);
-mainRouter.use(userRouter);
 mainRouter.use(fileRouter);

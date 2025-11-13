@@ -11,25 +11,31 @@ fileRouter.post(
   FileController.create
 );
 
-// userRouter.get(
-//   "/api/users",
-//   asyncHandler(authMiddleware),
-//   FileController.getAll
-// );
 fileRouter.get(
   "/api/files/:uuid",
   // asyncHandler(authMiddleware),
+  FileController.detail
+);
+fileRouter.get(
+  "/api/files/:uuid/stream",
+  asyncHandler(authMiddleware),
   FileController.stream
 );
 
 fileRouter.get(
   "/api/files/:uuid/download",
-  // asyncHandler(authMiddleware),
+  asyncHandler(authMiddleware),
   FileController.download
 );
 
+fileRouter.patch(
+  "/api/files/:uuid/delete",
+  asyncHandler(authMiddleware),
+  FileController.softDelete
+);
+
 fileRouter.delete(
-  "/api/files/:id",
+  "/api/files/:uuid",
   asyncHandler(authMiddleware),
   FileController.delete
 );

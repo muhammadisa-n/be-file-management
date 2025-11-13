@@ -30,9 +30,27 @@ export class UserRepository {
     });
   }
 
-  static async findById(uuid: string) {
+  static async findById(id: number) {
     return prismaClient.user.findUnique({
-      where: { uuid },
+      where: { id: id },
+      include: {
+        user_storage: true,
+      },
+    });
+  }
+  static async findByUUID(uuid: string) {
+    return prismaClient.user.findUnique({
+      where: { uuid: uuid },
+      include: {
+        user_storage: {
+          select: {
+            uuid: true,
+            quota: true,
+            used: true,
+            plan: true,
+          },
+        },
+      },
     });
   }
 

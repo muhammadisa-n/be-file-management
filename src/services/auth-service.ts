@@ -5,7 +5,8 @@ import {
   UserResponse,
   loginRequest,
   CreateUserRequest,
-  UpdateUserRequest,
+  UserDetailWithStorageResponse,
+  toUserDetailWithStorageResponse,
 } from "../dtos/user-dto";
 import { ResponseError } from "../utils/response-error";
 import { UserValidation } from "../validations/user-validation";
@@ -13,12 +14,11 @@ import { Validation } from "../utils/validation";
 import * as argon2 from "argon2";
 import { User } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { Request } from "express";
 import { UserRepository } from "../repositories/user-repository";
 import { UserRequest } from "../types/type-request";
-import { prismaClient } from "../config/database";
 import { env } from "../config/env";
 import { RevokedTokenRepository } from "../repositories/token-repository";
+import { UserStorageRepository } from "../repositories/user-storage-repository";
 
 export class AuthService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -31,12 +31,13 @@ export class AuthService {
 
     data.password = await argon2.hash(data.password);
 
-    const response = await UserRepository.create({
+    const user = await UserRepository.create({
       full_name: data.full_name,
       email: data.email,
       password: data.password,
     });
-    return toUserResponse(response);
+    await UserStorageRepository.create({ user_id: user.id });
+    return toUserResponse(user);
   }
 
   static async login(request: loginRequest) {
@@ -71,41 +72,11 @@ export class AuthService {
     return { user, token };
   }
 
-  static async me(user: User): Promise<UserDetailResponse> {
-    return toUserDetailResponse(user);
-  }
+  static async me(userUuid: string): Promise<UserDetailWithStorageResponse> {
+    const user = await UserRepository.findByUUID(userUuid);
+    if (!user) throw new ResponseError(404, "User tidak ditemukan");
 
-  static async updateProfile(
-    user: User,
-    request: UpdateUserRequest
-  ): Promise<UserResponse> {
-    const data = Validation.validate(UserValidation.UPDATE, request);
-    if (data.full_name) {
-      user.full_name = data.full_name;
-    }
-    if (data.password) {
-      user.password = await argon2.hash(data.password);
-    }
-
-    if (data.email && data.email !== user.email) {
-      const emailExists = await UserRepository.findemailExistsNotUserLoggedIn(
-        data.email,
-        user.uuid
-      );
-      if (emailExists != 0) {
-        throw new ResponseError(409, "Email Sudah Ada");
-      }
-      user.email = data.email;
-    }
-    const result = await UserRepository.updateUser(
-      {
-        full_name: user.full_name,
-        password: user.password,
-        email: user.email,
-      },
-      user.uuid
-    );
-    return toUserResponse(result);
+    return toUserDetailWithStorageResponse(user);
   }
 
   static async logout(req: UserRequest) {

@@ -18,7 +18,6 @@ async function startServer() {
     await connectDatabase();
     web.listen(env.PORT, () => {
       logger.info(`🚀 Server is listening on: ${env.BASE_URL}`);
-      logger.info(`🔗 API Docs available at: ${env.BASE_API_URL}/docs`);
     });
   } catch (error) {
     process.exit(0);

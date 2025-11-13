@@ -13,6 +13,14 @@ export class FileRepository {
       },
     });
   }
+  static async findByUUIDAndNotDeleted(uuid: string) {
+    return prismaClient.file.findFirst({
+      where: {
+        uuid,
+        NOT: { deleted_at: null },
+      },
+    });
+  }
 
   static async findMany(filters: any, skip: number, take: number) {
     return prismaClient.file.findMany({
@@ -41,8 +49,8 @@ export class FileRepository {
     });
   }
 
-  static async delete(uuid: string) {
-    return prismaClient.user.delete({ where: { uuid } });
+  static async delete(id: number) {
+    return prismaClient.file.delete({ where: { id } });
   }
 
   static async update(data: any, uuid: string) {
@@ -52,10 +60,34 @@ export class FileRepository {
     });
   }
 
-  static async softDelete(id: number) {
+  static async softDelete(uuid: string) {
     return prismaClient.file.update({
-      where: { id },
+      where: { uuid },
       data: { deleted_at: new Date() },
+    });
+  }
+
+  static async findByUUIDWithOwnerAndFolder(uuid: string) {
+    return prismaClient.file.findUnique({
+      where: { uuid },
+      include: {
+        owner: true,
+        folder: {
+          include: {
+            owner: true,
+            parent: {
+              include: {
+                owner: true,
+                parent: {
+                  include: {
+                    owner: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
   }
 }
