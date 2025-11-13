@@ -1,0 +1,72 @@
+/*
+ Navicat Premium Dump SQL
+
+ Source Server         : siadikdev
+ Source Server Type    : Oracle
+ Source Server Version : 190000 (Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production)
+ Source Host           : 10.1.2.204:1521
+ Source Schema         : SIADIKDEV
+
+ Target Server Type    : Oracle
+ Target Server Version : 190000 (Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production)
+ File Encoding         : 65001
+
+ Date: 05/11/2025 14:43:34
+*/
+
+
+-- ----------------------------
+-- Table structure for master_jenis_sk
+-- ----------------------------
+DROP TABLE "SIADIKDEV"."master_jenis_sk";
+CREATE TABLE "SIADIKDEV"."master_jenis_sk" (
+  "id" NUMBER VISIBLE NOT NULL,
+  "jenis_sk" VARCHAR2(255 BYTE) VISIBLE NOT NULL,
+  "deleted_at" VARCHAR2(255 BYTE) VISIBLE,
+  "created_at" TIMESTAMP(6) WITH LOCAL TIME ZONE VISIBLE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  "updated_at" TIMESTAMP(6) WITH LOCAL TIME ZONE VISIBLE DEFAULT CURRENT_TIMESTAMP NOT NULL
+)
+LOGGING
+NOCOMPRESS
+PCTFREE 10
+INITRANS 1
+STORAGE (
+  INITIAL 65536 
+  NEXT 1048576 
+  MINEXTENTS 1
+  MAXEXTENTS 2147483645
+  BUFFER_POOL DEFAULT
+)
+PARALLEL 1
+NOCACHE
+DISABLE ROW MOVEMENT
+;
+
+-- ----------------------------
+-- Records of master_jenis_sk
+-- ----------------------------
+INSERT INTO "SIADIKDEV"."master_jenis_sk" VALUES ('1', 'Ijin Belajar', NULL, TO_TIMESTAMP('2025-10-06 15:48:57.192000', 'SYYYY-MM-DD HH24:MI:SS:FF6'), TO_TIMESTAMP('2025-10-06 15:48:57.192000', 'SYYYY-MM-DD HH24:MI:SS:FF6'));
+INSERT INTO "SIADIKDEV"."master_jenis_sk" VALUES ('2', 'Pangkat', NULL, TO_TIMESTAMP('2025-10-06 15:48:57.230000', 'SYYYY-MM-DD HH24:MI:SS:FF6'), TO_TIMESTAMP('2025-10-06 15:48:57.231000', 'SYYYY-MM-DD HH24:MI:SS:FF6'));
+INSERT INTO "SIADIKDEV"."master_jenis_sk" VALUES ('3', 'Jabatan', NULL, TO_TIMESTAMP('2025-10-06 15:48:57.233000', 'SYYYY-MM-DD HH24:MI:SS:FF6'), TO_TIMESTAMP('2025-10-06 15:48:57.233000', 'SYYYY-MM-DD HH24:MI:SS:FF6'));
+INSERT INTO "SIADIKDEV"."master_jenis_sk" VALUES ('4', 'Lainnya', NULL, TO_TIMESTAMP('2025-10-06 15:48:57.235000', 'SYYYY-MM-DD HH24:MI:SS:FF6'), TO_TIMESTAMP('2025-10-06 15:48:57.235000', 'SYYYY-MM-DD HH24:MI:SS:FF6'));
+INSERT INTO "SIADIKDEV"."master_jenis_sk" VALUES ('5', 'Penghargaan', NULL, TO_TIMESTAMP('2025-10-06 15:48:57.237000', 'SYYYY-MM-DD HH24:MI:SS:FF6'), TO_TIMESTAMP('2025-10-06 15:48:57.237000', 'SYYYY-MM-DD HH24:MI:SS:FF6'));
+
+-- ----------------------------
+-- Primary Key structure for table master_jenis_sk
+-- ----------------------------
+ALTER TABLE "SIADIKDEV"."master_jenis_sk" ADD CONSTRAINT "SYS_C00234174" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Checks structure for table master_jenis_sk
+-- ----------------------------
+ALTER TABLE "SIADIKDEV"."master_jenis_sk" ADD CONSTRAINT "SYS_C00234170" CHECK ("id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+ALTER TABLE "SIADIKDEV"."master_jenis_sk" ADD CONSTRAINT "SYS_C00234171" CHECK ("jenis_sk" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+ALTER TABLE "SIADIKDEV"."master_jenis_sk" ADD CONSTRAINT "SYS_C00234172" CHECK ("created_at" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+ALTER TABLE "SIADIKDEV"."master_jenis_sk" ADD CONSTRAINT "SYS_C00234173" CHECK ("updated_at" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+
+-- ----------------------------
+-- Triggers structure for table master_jenis_sk
+-- ----------------------------
+CREATE TRIGGER "SIADIKDEV"."master_jenis_sk_autoinc_trg" BEFORE INSERT ON "SIADIKDEV"."master_jenis_sk" REFERENCING OLD AS "OLD" NEW AS "NEW" FOR EACH ROW 
+declare  checking number := 1;  begin    if (:new."id" is null) then      while checking >= 1 loop        select "master_jenis_sk_seq".nextval into :new."id" from dual;        select count("id") into checking from "master_jenis_sk"        where "id" = :new."id";      end loop;    end if;  end;
+/

@@ -4,13 +4,13 @@ export type loginRequest = {
   password: string;
 };
 export type CreateUserRequest = {
-  fullName: string;
+  full_name: string;
   email: string;
   password: string;
 };
 
 export type UpdateUserRequest = {
-  fullName?: string;
+  full_name?: string;
   email?: string;
   password?: string;
 };
@@ -22,8 +22,8 @@ export type ListUserRequest = {
   name?: string;
 };
 export type UserDetailResponse = {
-  id: string;
-  fullName: string;
+  uuid: string;
+  full_name: string;
   email: string;
   image_id?: string;
   image_url?: string;
@@ -33,15 +33,15 @@ export type UserDetailResponse = {
 };
 
 export type UserResponse = {
-  id: string;
-  fullName: string;
+  uuid: string;
+  full_name: string;
   email: string;
 };
 
 export function toUserDetailResponse(user: User): UserDetailResponse {
   return {
-    id: user.id,
-    fullName: user.fullName,
+    uuid: user.uuid,
+    full_name: user.full_name,
     email: user.email,
     created_at: user.created_at,
     updated_at: user.updated_at,
@@ -50,8 +50,8 @@ export function toUserDetailResponse(user: User): UserDetailResponse {
 }
 export function toUserResponse(user: User): UserResponse {
   return {
-    id: user.id,
-    fullName: user.fullName,
+    uuid: user.uuid,
+    full_name: user.full_name,
     email: user.email,
   };
 }

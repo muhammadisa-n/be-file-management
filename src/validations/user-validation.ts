@@ -2,7 +2,7 @@ import { z, ZodType } from "zod";
 
 export class UserValidation {
   static readonly REGISTER: ZodType = z.object({
-    fullName: z.preprocess(
+    full_name: z.preprocess(
       (v) => (v === null ? undefined : v),
       z
         .string({
@@ -34,7 +34,7 @@ export class UserValidation {
   });
 
   static readonly CREATE: ZodType = z.object({
-    fullName: z.preprocess(
+    full_name: z.preprocess(
       (v) => (v === null ? undefined : v),
       z
         .string({
@@ -95,7 +95,7 @@ export class UserValidation {
   });
 
   static readonly UPDATE: ZodType = z.object({
-    fullName: z
+    full_name: z
       .string({
         required_error: "Nama Lengkap Wajib Diisi",
       })

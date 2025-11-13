@@ -18,6 +18,7 @@ import { UserRepository } from "../repositories/user-repository";
 import { UserRequest } from "../types/type-request";
 import { prismaClient } from "../config/database";
 import { env } from "../config/env";
+import { RevokedTokenRepository } from "../repositories/token-repository";
 
 export class AuthService {
   static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -31,7 +32,7 @@ export class AuthService {
     data.password = await argon2.hash(data.password);
 
     const response = await UserRepository.create({
-      fullName: data.fullName,
+      full_name: data.full_name,
       email: data.email,
       password: data.password,
     });
@@ -54,10 +55,10 @@ export class AuthService {
       throw new ResponseError(401, "Gagal Login! Detail login salah");
     }
 
-    const refreshToken = jwt.sign(
+    const token = jwt.sign(
       {
-        user_id: userExits.id,
-        user_fullName: userExits.fullName,
+        user_uuid: userExits.uuid,
+        user_full_name: userExits.full_name,
         user_email: userExits.email,
       },
       env.JWT_SECRET as string,
@@ -66,20 +67,8 @@ export class AuthService {
       }
     );
 
-    const accessToken = jwt.sign(
-      {
-        user_id: userExits.id,
-        user_fullName: userExits.fullName,
-        user_email: userExits.email,
-      },
-      env.JWT_SECRET as string,
-      {
-        expiresIn: "5m",
-      }
-    );
-
     const user = toUserResponse(userExits);
-    return { user, refreshToken, accessToken };
+    return { user, token };
   }
 
   static async me(user: User): Promise<UserDetailResponse> {
@@ -91,8 +80,8 @@ export class AuthService {
     request: UpdateUserRequest
   ): Promise<UserResponse> {
     const data = Validation.validate(UserValidation.UPDATE, request);
-    if (data.fullName) {
-      user.fullName = data.fullName;
+    if (data.full_name) {
+      user.full_name = data.full_name;
     }
     if (data.password) {
       user.password = await argon2.hash(data.password);
@@ -101,7 +90,7 @@ export class AuthService {
     if (data.email && data.email !== user.email) {
       const emailExists = await UserRepository.findemailExistsNotUserLoggedIn(
         data.email,
-        user.id
+        user.uuid
       );
       if (emailExists != 0) {
         throw new ResponseError(409, "Email Sudah Ada");
@@ -110,53 +99,23 @@ export class AuthService {
     }
     const result = await UserRepository.updateUser(
       {
-        fullName: user.fullName,
+        full_name: user.full_name,
         password: user.password,
         email: user.email,
       },
-      user.id
+      user.uuid
     );
     return toUserResponse(result);
   }
 
   static async logout(req: UserRequest) {
-    const refreshToken = req.cookies.refresh_token;
-    if (!req.user) {
-      throw new ResponseError(401, "Unauthorized: Anda Belum Login.");
-    }
-    if (!refreshToken) {
-      throw new ResponseError(401, "Unauthorized: Anda Belum Login.");
-    }
-    return refreshToken;
-  }
-
-  static async refreshToken(req: Request) {
-    const refreshToken = req.cookies.refresh_token;
-    if (!refreshToken) {
-      throw new ResponseError(401, "Unauthorized, Anda Belum Login");
-    }
-
-    try {
-      const decoded = jwt.verify(refreshToken, env.JWT_SECRET as string) as any;
-
-      const user = await prismaClient.user.findUnique({
-        where: { id: decoded.user_id },
-      });
-
-      if (!user) {
-        throw new ResponseError(401, "Unauthorized, Anda Belum Login.");
-      }
-      const payload = {
-        user_id: user.id,
-        user_fullName: user.fullName,
-        user_email: user.email,
-      };
-      const accessToken = jwt.sign(payload, env.JWT_SECRET as string, {
-        expiresIn: "6m",
-      });
-      return { accessToken, user: payload };
-    } catch (err) {
-      throw new ResponseError(401, "Token Tidak Valid Atau Kadaluarsa");
-    }
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) throw new ResponseError(401, "Token tidak ditemukan");
+    const decoded = jwt.decode(token) as { exp: number };
+    const expiredAt = new Date(decoded.exp * 1000);
+    await RevokedTokenRepository.revokedToken({
+      token: token,
+      expired_at: expiredAt,
+    });
   }
 }

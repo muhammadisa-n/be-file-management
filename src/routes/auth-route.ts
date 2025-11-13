@@ -12,9 +12,3 @@ authRouter.post(
   asyncHandler(authMiddleware),
   AuthController.logout
 );
-authRouter.get("/api/auth/refresh-token", AuthController.refreshToken);
-authRouter.put(
-  "/api/auth/update-profile",
-  asyncHandler(authMiddleware),
-  AuthController.updateProfile
-);

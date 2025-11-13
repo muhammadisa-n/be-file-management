@@ -30,21 +30,21 @@ export class UserRepository {
     });
   }
 
-  static async findById(id: string) {
+  static async findById(uuid: string) {
     return prismaClient.user.findUnique({
-      where: { id },
+      where: { uuid },
     });
   }
 
-  static async update(id: string, data: any) {
+  static async update(uuid: string, data: any) {
     return prismaClient.user.update({
-      where: { id },
+      where: { uuid },
       data,
     });
   }
 
-  static async delete(id: string) {
-    return prismaClient.user.delete({ where: { id } });
+  static async delete(uuid: string) {
+    return prismaClient.user.delete({ where: { uuid } });
   }
 
   static async findUserByEmail(login: string) {
@@ -55,19 +55,19 @@ export class UserRepository {
     });
   }
 
-  static async updateUser(data: any, id: string) {
+  static async updateUser(data: any, uuid: string) {
     return prismaClient.user.update({
-      where: { id },
+      where: { uuid },
       data,
     });
   }
 
-  static async findemailExistsNotUserLoggedIn(email: string, idUser: string) {
+  static async findemailExistsNotUserLoggedIn(email: string, uuid: string) {
     return prismaClient.user.count({
       where: {
         email: email,
         NOT: {
-          id: idUser,
+          uuid: uuid,
         },
       },
     });

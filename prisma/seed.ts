@@ -11,7 +11,7 @@ async function main() {
     where: { email: "tes@gmail.com" },
     update: {},
     create: {
-      fullName: "Tes",
+      full_name: "Tes",
       email: "tes@gmail.com",
       password: await argon2.hash("12345678"),
     },
