@@ -1,13 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import * as argon2 from "argon2";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { email: "tes@gmail.com" },
     update: {},
     create: {
@@ -16,8 +13,14 @@ async function main() {
       password: await argon2.hash("12345678"),
     },
   });
-
-  console.log("Users seeded");
+  await prisma.userStorage.upsert({
+    where: { user_id: user.id },
+    update: {},
+    create: {
+      user_id: user.id,
+    },
+  });
+  console.log("Users seeded with user storage");
 }
 main()
   .catch((e) => {
