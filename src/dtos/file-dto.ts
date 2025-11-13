@@ -12,11 +12,14 @@ export type FileResponse = {
   is_public: boolean;
   folder_id?: number | null;
   owner_id: number;
+  url: {
+    preview: string;
+    download: string;
+    cloudinary: string;
+  };
   created_at: Date;
   updated_at: Date | null;
   deleted_at: Date | null;
-  url_preview: string;
-  url_download: string;
 };
 
 export function toFileResponse(file: File): FileResponse {
@@ -28,11 +31,14 @@ export function toFileResponse(file: File): FileResponse {
     is_public: file.is_public,
     folder_id: file.folder_id,
     owner_id: file.owner_id,
+    url: {
+      preview: file.url_preview,
+      download: file.url_download,
+      cloudinary: file.url_cloudinary,
+    },
     created_at: file.created_at,
     updated_at: file.updated_at,
     deleted_at: file.deleted_at,
-    url_preview: file.url_preview,
-    url_download: file.url_download,
   };
 }
 
@@ -63,14 +69,14 @@ export type FileDetailResponse = {
     full_name: string;
     email: string;
   };
-  created_at: Date;
-  updated_at: Date | null;
-  deleted_at: Date | null;
   url: {
     preview: string;
     download: string;
     cloudinary: string;
   };
+  created_at: Date;
+  updated_at: Date | null;
+  deleted_at: Date | null;
 };
 
 // Mapper rekursif folder
@@ -112,13 +118,13 @@ export function toFileDetailResponse(
       full_name: file.owner.full_name,
       email: file.owner.email,
     },
-    created_at: file.created_at,
-    updated_at: file.updated_at,
-    deleted_at: file.deleted_at,
     url: {
       preview: file.url_preview,
       download: file.url_download,
       cloudinary: file.url_cloudinary,
     },
+    created_at: file.created_at,
+    updated_at: file.updated_at,
+    deleted_at: file.deleted_at,
   };
 }

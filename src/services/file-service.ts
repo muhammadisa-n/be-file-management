@@ -94,7 +94,7 @@ export class FileService {
   }
 
   static async softDelete(uuid: string) {
-    const file = await FileRepository.findByUUID(uuid);
+    const file = await FileRepository.findByUUIDWithDeletedIsNull(uuid);
     if (!file) {
       throw new ResponseError(404, "File tidak ditemukan");
     }

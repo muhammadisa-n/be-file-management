@@ -1,0 +1,10 @@
+[2025-11-14 00:02:08] INFO: [32m[1mGET[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af 200 28.808 ms - 779
+[2025-11-14 00:05:36] INFO: [32m[1mGET[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af 200 28.703 ms - 779
+[2025-11-14 00:05:59] INFO: [32m[1mGET[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af 200 4.274 ms - 779
+[2025-11-14 00:06:24] INFO: [32m[1mGET[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af/stream 200 1620.684 ms - 0
+[2025-11-14 00:06:33] WARN: [35m[1mPATCH[22m[39m /api/files/8bbf912b-559c-43c5-bd3b-c2eccc204edc/delete 404 5.177 ms - 67
+[2025-11-14 00:06:39] INFO: [35m[1mPATCH[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af/delete 200 9.063 ms - 77
+[2025-11-14 00:07:59] WARN: [35m[1mPATCH[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af/delete 404 32.903 ms - 67
+[2025-11-14 00:08:00] WARN: [35m[1mPATCH[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af/delete 404 5.657 ms - 67
+[2025-11-14 00:08:19] INFO: [31m[1mDELETE[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af 200 1620.177 ms - 76
+[2025-11-14 00:08:30] WARN: [32m[1mGET[22m[39m /api/files/ce05551e-7d6a-4dd3-8e61-4bdee10431af 404 3.131 ms - 67

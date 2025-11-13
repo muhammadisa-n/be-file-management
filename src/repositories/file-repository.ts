@@ -5,7 +5,7 @@ export class FileRepository {
     return prismaClient.file.create({ data });
   }
 
-  static async findByUUID(uuid: string) {
+  static async findByUUIDWithDeletedIsNull(uuid: string) {
     return prismaClient.file.findFirst({
       where: {
         uuid,
@@ -13,11 +13,10 @@ export class FileRepository {
       },
     });
   }
-  static async findByUUIDAndNotDeleted(uuid: string) {
+  static async findByUUID(uuid: string) {
     return prismaClient.file.findFirst({
       where: {
         uuid,
-        NOT: { deleted_at: null },
       },
     });
   }
