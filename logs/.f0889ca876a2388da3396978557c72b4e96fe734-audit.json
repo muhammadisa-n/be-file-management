@@ -9,6 +9,11 @@
             "date": 1763017207506,
             "name": "C:\\Dev\\Projects\\Other\\be-file-management\\logs\\access-log-2025-11-13.log",
             "hash": "3d4650e1127876a6fb1f54da098a66a4e00c44030cf871c6081dce110989f93e"
+        },
+        {
+            "date": 1763053215290,
+            "name": "C:\\Dev\\Projects\\Other\\be-file-management\\logs\\access-log-2025-11-14.log",
+            "hash": "ad742ae53cd11e582c8147ff44006bcd1e4dd90b60f7e5c9d915618a790d79ca"
         }
     ],
     "hashType": "sha256"

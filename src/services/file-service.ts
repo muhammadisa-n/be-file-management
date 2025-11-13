@@ -105,7 +105,7 @@ export class FileService {
   }
 
   static async delete(req: UserRequest, uuid: string) {
-    const file = await FileRepository.findByUUIDAndNotDeleted(uuid);
+    const file = await FileRepository.findByUUID(uuid);
     if (!file) {
       throw new ResponseError(404, "File tidak ditemukan");
     }

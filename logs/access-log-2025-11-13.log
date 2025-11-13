@@ -171,3 +171,5 @@
 [2025-11-13 23:55:08] WARN: [31m[1mDELETE[22m[39m /api/files/8bbf912b-559c-43c5-bd3b-c2eccc204edc 404 4.336 ms - 67
 [2025-11-13 23:55:17] INFO: [35m[1mPATCH[22m[39m /api/files/8bbf912b-559c-43c5-bd3b-c2eccc204edc/delete 200 6.715 ms - 77
 [2025-11-13 23:55:21] INFO: [31m[1mDELETE[22m[39m /api/files/8bbf912b-559c-43c5-bd3b-c2eccc204edc 200 1112.753 ms - 76
+[2025-11-13 23:59:13] WARN: [36m[1mPOST[22m[39m /api/files 400 33.481 ms - 66
+[2025-11-13 23:59:49] INFO: [36m[1mPOST[22m[39m /api/files 201 23305.452 ms - 503
