@@ -1,0 +1,122 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+  output        = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  uuid         String       @unique @default(uuid())
+  full_name    String       @db.VarChar(100)
+  email        String       @unique @db.VarChar(100)
+  password     String       @db.VarChar(255)
+  created_at   DateTime     @default(now()) @db.Timestamp(0)
+  updated_at   DateTime     @updatedAt @db.Timestamp(0)
+  deleted_at   DateTime?    @db.Timestamp(0)
+  user_storage UserStorage?
+  files        File[]
+  folders      Folder[]
+  shares       Share[]
+
+  @@map("users")
+}
+
+model UserStorage {
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique @default(uuid())
+  user_id    Int       @unique
+  quota      BigInt    @default(1073741824) // 1 GB default quota
+  used       BigInt    @default(0)
+  plan       String    @default("free") @db.VarChar(100)
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+  updated_at DateTime  @updatedAt @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("users_storage")
+}
+
+model RevokedToken {
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique @default(uuid())
+  token      String    @unique @db.VarChar(500)
+  expired_at DateTime  @db.Timestamp(0)
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+  updated_at DateTime  @updatedAt @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  @@map("revoked_tokens")
+}
+
+model File {
+  id             Int       @id @default(autoincrement())
+  uuid           String    @unique @default(uuid())
+  name           String    @db.VarChar(100)
+  public_id      String    @db.VarChar(100)
+  type           String    @db.VarChar(50)
+  size           BigInt
+  is_public      Boolean   @default(false)
+  folder_id      Int?
+  owner_id       Int
+  url_download   String    @db.VarChar(500)
+  url_preview    String    @db.VarChar(500)
+  url_cloudinary String    @db.VarChar(500)
+  created_at     DateTime  @default(now()) @db.Timestamp(0)
+  updated_at     DateTime  @updatedAt @db.Timestamp(0)
+  deleted_at     DateTime? @db.Timestamp(0)
+
+  owner  User    @relation(fields: [owner_id], references: [id])
+  folder Folder? @relation(fields: [folder_id], references: [id])
+  shares Share[] @relation("FileShares")
+
+  @@map("files")
+}
+
+model Folder {
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique @default(uuid())
+  name       String    @db.VarChar(100)
+  is_public  Boolean   @default(false)
+  parent_id  Int?
+  owner_id   Int
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+  updated_at DateTime  @updatedAt @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  parent   Folder?  @relation("FolderToFolder", fields: [parent_id], references: [id])
+  children Folder[] @relation("FolderToFolder")
+  owner    User     @relation(fields: [owner_id], references: [id])
+  files    File[]
+  shares   Share[]  @relation("FolderShares")
+
+  @@map("folders")
+}
+
+enum Permission {
+  VIEW
+  EDIT
+}
+
+model Share {
+  id         Int        @id @default(autoincrement())
+  uuid       String     @unique @default(uuid())
+  file_id    Int?
+  folder_id  Int?
+  user_id    Int
+  permission Permission
+  created_at DateTime   @default(now()) @db.Timestamp(0)
+  updated_at DateTime   @updatedAt @db.Timestamp(0)
+  deleted_at DateTime?  @db.Timestamp(0)
+
+  file   File?   @relation("FileShares", fields: [file_id], references: [id], map: "shares_file_id_fkey")
+  folder Folder? @relation("FolderShares", fields: [folder_id], references: [id], map: "shares_folder_id_fkey")
+  user   User    @relation(fields: [user_id], references: [id], map: "shares_user_id_fkey")
+
+  @@map("shares")
+}

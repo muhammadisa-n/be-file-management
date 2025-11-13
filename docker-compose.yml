@@ -1,0 +1,8 @@
+services:
+  craft-js:
+    container_name: craft-js
+    image: craft_js_image
+    build: .
+    ports:
+      - "4444:4444"
+    restart: always
