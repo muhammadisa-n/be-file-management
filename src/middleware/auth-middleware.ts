@@ -11,12 +11,17 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const refreshToken = req.cookies.refresh_token;
-  if (!refreshToken) {
-    throw new ResponseError(401, "Unauthorized: Anda Belum Login.");
-  }
   const token = req.get("Authorization")?.split(" ")[1];
   if (!token) {
+    return res
+      .status(401)
+      .json(errorResponse("Unauthorized: Access Token Tidak Valid.", 401));
+  }
+  const revoked = await prismaClient.revokedToken.findUnique({
+    where: { token },
+  });
+
+  if (revoked) {
     return res
       .status(401)
       .json(errorResponse("Unauthorized: Access Token Tidak Valid.", 401));
@@ -24,15 +29,15 @@ export const authMiddleware = async (
   let payload;
   try {
     payload = jwt.verify(token, env.JWT_SECRET as string) as {
-      user_id: string;
+      user_uuid: string;
       user_email: string;
-      user_fullName: string;
+      user_full_name: string;
     };
   } catch (err) {
     throw new ResponseError(401, "Unauthorized: Access Token Tidak Valid.");
   }
   const user = await prismaClient.user.findUnique({
-    where: { id: payload.user_id },
+    where: { uuid: payload.user_uuid },
   });
   if (!user) {
     return res

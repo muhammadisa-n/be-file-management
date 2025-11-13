@@ -24,17 +24,10 @@ export class AuthController {
     try {
       const request: loginRequest = req.body as loginRequest;
       const response = await AuthService.login(request);
-      res.cookie("refresh_token", response.refreshToken, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-        secure: env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-      });
       res.status(200).json(
         successResponse("Login Berhasil", 200, {
           user: response.user,
-          accessToken: response.accessToken,
+          token: response.token,
         })
       );
     } catch (error) {
@@ -44,7 +37,7 @@ export class AuthController {
 
   static async me(req: UserRequest, res: Response, next: NextFunction) {
     try {
-      const response = await AuthService.me(req.user!);
+      const response = await AuthService.me(req.user!.uuid);
       res
         .status(200)
         .json(successResponse("Get Detail User Berhasil", 200, response));
@@ -53,36 +46,9 @@ export class AuthController {
     }
   }
 
-  static async updateProfile(
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const request: UpdateUserRequest = req.body as UpdateUserRequest;
-      const response = await AuthService.updateProfile(req.user!, request);
-      res.status(200).json(successUpdateResponse(response));
-    } catch (error) {
-      next(error);
-    }
-  }
-
   static async logout(req: UserRequest, res: Response, next: NextFunction) {
     await AuthService.logout(req);
-    res.clearCookie("refresh_token");
+
     res.status(200).json(successResponse("Logout berhasil", 200));
-  }
-  static async refreshToken(req: Request, res: Response, next: NextFunction) {
-    try {
-      const response = await AuthService.refreshToken(req);
-      res.status(200).json(
-        successResponse("Get Access Token Berhasil", 200, {
-          user: response.user,
-          accessToken: response.accessToken,
-        })
-      );
-    } catch (error) {
-      next(error);
-    }
   }
 }

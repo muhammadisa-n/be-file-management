@@ -22,7 +22,7 @@ export class UserService {
     data.password = await argon2.hash(data.password);
 
     const response = await UserRepository.create({
-      fullName: data.fullName,
+      full_name: data.full_name,
       email: data.email,
       password: data.password,
     });
@@ -33,7 +33,7 @@ export class UserService {
     const filters = [];
     if (requestList.name) {
       filters.push({
-        fullName: {
+        full_name: {
           contains: requestList.name,
         },
       });
@@ -55,24 +55,17 @@ export class UserService {
     return tolistResponse(result);
   }
 
-  static async getOne(id: string): Promise<UserResponse> {
-    const data = await UserRepository.findById(id);
-    if (!data) {
-      throw new ResponseError(404, "Data Tidak Ditemukan");
-    }
-    return toUserResponse(data);
-  }
   static async update(
     id: string,
     request: UpdateUserRequest
   ): Promise<UserResponse> {
     const data = Validation.validate(UserValidation.UPDATE, request);
-    const user = await UserRepository.findById(id);
+    const user = await UserRepository.findByUUID(id);
     if (!user) {
       throw new ResponseError(404, "Data Tidak Ditemukan");
     }
-    if (data.fullName) {
-      user.fullName = data.fullName;
+    if (data.full_name) {
+      user.full_name = data.full_name;
     }
     if (data.password) {
       user.password = await argon2.hash(data.password);
@@ -85,7 +78,7 @@ export class UserService {
       user.email = data.email;
     }
     const result = await UserRepository.update(id, {
-      fullName: user.fullName,
+      full_name: user.full_name,
       password: user.password,
       email: user.email,
     });
@@ -93,7 +86,7 @@ export class UserService {
   }
 
   static async delete(id: string) {
-    const data = await UserRepository.findById(id);
+    const data = await UserRepository.findByUUID(id);
     if (!data) {
       throw new ResponseError(404, "Data Tidak Ditemukan");
     }

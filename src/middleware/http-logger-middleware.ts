@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { httpAccessLogger } from "../config/logger";
+import chalk from "chalk";
 
-export const httpLogger = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const httpLogger = (req: Request, res: Response, next: NextFunction) => {
   const start = process.hrtime();
 
   res.on("finish", () => {
@@ -14,16 +11,44 @@ export const httpLogger = async (
 
     const logMessage = `${req.method} ${req.originalUrl} ${res.statusCode} ${timeInMs} ms - ${res.get("Content-Length") || 0}`;
 
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      httpAccessLogger.info(logMessage);
-    } else if (res.statusCode >= 300 && res.statusCode < 400) {
-      httpAccessLogger.info(logMessage);
-    } else if (res.statusCode >= 400 && res.statusCode < 500) {
-      httpAccessLogger.warn(logMessage);
-    } else if (res.statusCode >= 500) {
-      httpAccessLogger.error(logMessage);
+    let level: "info" | "warn" | "error" | "debug";
+
+    if (res.statusCode >= 500) {
+      level = "error";
+    } else if (res.statusCode >= 400) {
+      level = "warn";
     } else {
-      httpAccessLogger.debug(logMessage);
+      level = "info";
+    }
+
+    // Tag method untuk konsol
+    const methodColors: Record<string, string> = {
+      GET: chalk.green.bold("GET"),
+      POST: chalk.cyan.bold("POST"),
+      PUT: chalk.yellow.bold("PUT"),
+      PATCH: chalk.magenta.bold("PATCH"),
+      DELETE: chalk.red.bold("DELETE"),
+      OPTIONS: chalk.white.bold("OPTIONS"),
+      HEAD: chalk.gray.bold("HEAD"),
+    };
+
+    const methodColored = methodColors[req.method] || req.method;
+    const coloredMessage = logMessage.replace(req.method, methodColored);
+
+    // Kirim ke logger
+    switch (level) {
+      case "info":
+        httpAccessLogger.info(coloredMessage);
+        break;
+      case "warn":
+        httpAccessLogger.warn(coloredMessage);
+        break;
+      case "error":
+        httpAccessLogger.error(coloredMessage);
+        break;
+      default:
+        httpAccessLogger.debug(coloredMessage);
+        break;
     }
   });
 
